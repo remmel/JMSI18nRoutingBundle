@@ -1,6 +1,6 @@
 {
     "name":         "jms/i18n-routing-bundle",
-    "description":  "This bundle allows you to create i18n routes. Fork of the jms/i18n-routing-bundle",
+    "description":  "This bundle allows you to create i18n routes. Fork of the jms/i18n-routing-bundle. The new feature is to be able to define multiple locale for multiple hosts",
     "keywords":     ["translation","multilanguage","routing"],
     "homepage": "http://jmsyst.com/bundles/JMSI18nRoutingBundle",       
     "type":         "symfony-bundle",

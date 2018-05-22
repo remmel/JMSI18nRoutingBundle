@@ -80,23 +80,17 @@ final class Configuration implements ConfigurationInterface
                     ->scalarNode('strategy')
                         ->defaultValue('custom')
                         ->validate()
-                            ->ifNotInArray(array('prefix', 'prefix_except_default', 'custom'))
+                            ->ifNotInArray(array('prefix', 'prefix_except_default', 'custom', 'prefix_per_locale'))
                             ->thenInvalid('Must be one of the following: prefix, prefix_except_default, or custom (default)')
                         ->end()
                     ->end()
                     ->booleanNode('prefix_with_locale')->defaultFalse()->end()
+                    ->arrayNode('prefix')
+                        ->prototype('scalar')->end()
+                    ->end()
                     ->booleanNode('omit_prefix_when_default')->defaultTrue()->end()
                     ->arrayNode('hosts')
-                        ->validate()
-                            ->always()
-                            ->then(function($v) {
-                                if (count($v) !== count(array_flip($v))) {
-                                    throw new \Exception('Every locale must map to a different host. You cannot have multiple locales map to the same host.');
-                                }
-
-                                return $v;
-                            })
-                        ->end()
+                        ->normalizeKeys(false)
                         ->useAttributeAsKey('locale')
                         ->prototype('scalar')->end()
                     ->end()
