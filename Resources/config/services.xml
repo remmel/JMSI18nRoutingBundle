@@ -53,6 +53,7 @@
             <argument>%jms_i18n_routing.strategy%</argument>
             <argument type="service" id="translator" />
             <argument>%jms_i18n_routing.locales%</argument>
+            <argument>%jms_i18n_routing.prefix%</argument>
             <argument>%kernel.cache_dir%</argument>
             <argument>%jms_i18n_routing.catalogue%</argument>
             <argument>%jms_i18n_routing.default_locale%</argument>

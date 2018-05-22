@@ -19,6 +19,7 @@ class DefaultPatternGenerationStrategy implements PatternGenerationStrategyInter
     const STRATEGY_PREFIX = 'prefix';
     const STRATEGY_PREFIX_EXCEPT_DEFAULT = 'prefix_except_default';
     const STRATEGY_CUSTOM = 'custom';
+    const STRATEGY_PREFIX_PER_LOCALE = 'prefix_per_locale';
 
     private $strategy;
     private $translator;
@@ -26,13 +27,15 @@ class DefaultPatternGenerationStrategy implements PatternGenerationStrategyInter
     private $locales;
     private $cacheDir;
     private $defaultLocale;
+    private $prefix;
 
-    public function __construct($strategy, TranslatorInterface $translator, array $locales, $cacheDir, $translationDomain = 'routes', $defaultLocale = 'en')
+    public function __construct($strategy, TranslatorInterface $translator, array $locales, array $prefix, $cacheDir, $translationDomain = 'routes', $defaultLocale = 'en')
     {
         $this->strategy = $strategy;
         $this->translator = $translator;
         $this->translationDomain = $translationDomain;
         $this->locales = $locales;
+        $this->prefix = $prefix;
         $this->cacheDir = $cacheDir;
         $this->defaultLocale = $defaultLocale;
     }
@@ -65,7 +68,8 @@ class DefaultPatternGenerationStrategy implements PatternGenerationStrategyInter
 
             // prefix with locale if requested
             if (self::STRATEGY_PREFIX === $this->strategy
-                || (self::STRATEGY_PREFIX_EXCEPT_DEFAULT === $this->strategy && $this->defaultLocale !== $locale)) {
+                || (self::STRATEGY_PREFIX_EXCEPT_DEFAULT === $this->strategy && $this->defaultLocale !== $locale)
+                || (self::STRATEGY_PREFIX_PER_LOCALE === $this->strategy && in_array($locale, $this->prefix))) {
                 $i18nPattern = '/'.$locale.$i18nPattern;
                 if (null !== $route->getOption('i18n_prefix')) {
                     $i18nPattern = $route->getOption('i18n_prefix').$i18nPattern;
