@@ -39,6 +39,8 @@ jms_i18n_routing:
 ## Note
 Currently the jms plugin doesn't set the host when generating the route `I18nLoader`. It matches the host later in `I18nRouter.matchI18n`.
 It should be also better to simplier the configuration to have something like :
+Code inspired from https://github.com/MichaelKubovic/JMSI18nRoutingBundle  
+Diff: https://github.com/schmittjoh/JMSI18nRoutingBundle/compare/2.0...MichaelKubovic:master
 
 ```
 jms_i18n_routing:
