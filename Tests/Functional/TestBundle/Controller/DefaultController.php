@@ -18,6 +18,7 @@
 
 namespace JMS\I18nRoutingBundle\Tests\Functional\TestBundle\Controller;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -36,5 +37,24 @@ class DefaultController
             : $request->getSession()->getLocale();
 
         return array('locale' => $locale);
+    }
+
+    /**
+     * @Route("/contact", name="contact")
+     * @Template
+     */
+    public function aboutAction(Request $request) {
+        return [
+            'locale' => $request->getLocale()
+        ];
+    }
+
+    /**
+     * @Route("/api", name="api", options={"i18n"=false})
+     */
+    public function apiAction(Request $request) {
+        return new JsonResponse([
+            'status' => true
+        ]);
     }
 }

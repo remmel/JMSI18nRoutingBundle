@@ -1,0 +1,11 @@
+imports:
+    - { resource: ./default.yml }
+
+parameters:
+    locale: fr
+
+jms_i18n_routing:
+    locales:
+        en: //www.website.com
+        de: //www.website.de
+        es: //www.website.com/es

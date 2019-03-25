@@ -18,16 +18,10 @@
 
 namespace JMS\I18nRoutingBundle\Tests\Router;
 
-use JMS\I18nRoutingBundle\Router\DefaultPatternGenerationStrategy;
-
-use JMS\I18nRoutingBundle\Router\DefaultRouteExclusionStrategy;
-
+use JMS\I18nRoutingBundle\Router\I18nLoader;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
-use Symfony\Component\Translation\Loader\YamlFileLoader;
-use Symfony\Component\Translation\Translator;
-use JMS\I18nRoutingBundle\Router\I18nLoader;
 
 class I18nLoaderTest extends TestCase
 {
@@ -39,118 +33,34 @@ class I18nLoaderTest extends TestCase
 
         $this->assertEquals(2, count($i18nCol->all()));
 
-        $de = $i18nCol->get('de__RG__contact');
-        $this->assertEquals('/kontakt', $de->getPath());
+        $de = $i18nCol->get('contact__RG__de');
+        $this->assertEquals('/contact', $de->getPath());
         $this->assertEquals('de', $de->getDefault('_locale'));
+        $this->assertEquals('website.de', $de->getHost());
 
-        $en = $i18nCol->get('en__RG__contact');
-        $this->assertEquals('/contact', $en->getPath());
+        $en = $i18nCol->get('contact__RG__en');
+        $this->assertEquals('/en/contact', $en->getPath());
         $this->assertEquals('en', $en->getDefault('_locale'));
+        $this->assertEquals('website.com', $en->getHost());
     }
 
-    public function testLoadDoesNotRemoveOriginalIfNotAllRoutesHaveTranslationsUnlessRedirectIsOff()
+
+    public function testLoadNoI18n()
     {
         $col = new RouteCollection();
-        $col->add('support', new Route('/support'));
-        $i18nCol = $this->getLoader('custom')->load($col);
-
-        $this->assertEquals(3, count($i18nCol->all()));
-
-        $de = $i18nCol->get('de__RG__support');
-        $this->assertEquals('/support', $de->getPath());
-
-        $en = $i18nCol->get('en__RG__support');
-        $this->assertEquals('/support', $en->getPath());
-    }
-
-    /**
-     * @dataProvider getStrategies
-     */
-    public function testLoadDoesNotAddI18nRoutesIfI18nIsFalse($strategy)
-    {
-        $col = new RouteCollection();
-        $col->add('route', new Route('/no-i18n', array(), array(), array('i18n' => false)));
-        $i18nCol = $this->getLoader($strategy)->load($col);
+        $col->add('api_no_i18n', new Route('/api', array(), array(), array('i18n' => false)));
+        $i18nCol = $this->getLoader()->load($col);
 
         $this->assertEquals(1, count($i18nCol->all()));
-        $this->assertNull($i18nCol->get('route')->getDefault('_locale'));
+        $this->assertNull($i18nCol->get('api_no_i18n')->getDefault('_locale'));
+
+        $api = $i18nCol->get('api_no_i18n');
+        $this->assertEquals('/api', $api->getPath());
+        $this->assertEmpty($api->getHost());
     }
 
-    public function testLoadUsesOriginalTranslationIfNoTranslationExists()
+    private function getLoader()
     {
-        $col = new RouteCollection();
-        $col->add('untranslated_route', new Route('/not-translated'));
-        $i18nCol = $this->getLoader()->load($col);
-
-        $this->assertEquals(3, count($i18nCol->all()));
-        $this->assertEquals('/not-translated', $i18nCol->get('de__RG__untranslated_route')->getPath());
-        $this->assertEquals('/not-translated', $i18nCol->get('en__RG__untranslated_route')->getPath());
-    }
-
-    public function testLoadIfRouteIsNotTranslatedToAllLocales()
-    {
-        $col = new RouteCollection();
-        $col->add('route', new Route('/not-available-everywhere', array(), array(), array('i18n_locales' => array('en'))));
-        $i18nCol = $this->getLoader()->load($col);
-
-        $this->assertEquals(array('en__RG__route'), array_keys($i18nCol->all()));
-    }
-
-    public function testLoadIfStrategyIsPrefix()
-    {
-        $col = new RouteCollection();
-        $col->add('contact', new Route('/contact'));
-        $i18nCol = $this->getLoader('prefix')->load($col);
-
-        $this->assertEquals(2, count($i18nCol->all()));
-
-        $de = $i18nCol->get('de__RG__contact');
-        $this->assertEquals('/de/kontakt', $de->getPath());
-
-        $en = $i18nCol->get('en__RG__contact');
-        $this->assertEquals('/en/contact', $en->getPath());
-    }
-
-    public function testLoadIfStrategyIsPrefixExceptDefault()
-    {
-        $col = new RouteCollection();
-        $col->add('contact', new Route('/contact'));
-        $i18nCol = $this->getLoader('prefix_except_default')->load($col);
-
-        $this->assertEquals(2, count($i18nCol->all()));
-
-        $de = $i18nCol->get('de__RG__contact');
-        $this->assertEquals('/de/kontakt', $de->getPath());
-
-        $en = $i18nCol->get('en__RG__contact');
-        $this->assertEquals('/contact', $en->getPath());
-    }
-
-    public function testLoadAddsPrefix()
-    {
-        $col = new RouteCollection();
-        $col->add('dashboard', new Route('/dashboard', array(), array(), array('i18n_prefix' => '/admin')));
-        $i18nCol = $this->getLoader('prefix')->load($col);
-
-        $en = $i18nCol->get('en__RG__dashboard');
-        $this->assertEquals('/admin/en/dashboard', $en->getPath());
-    }
-
-    public function getStrategies()
-    {
-        return array(array('custom'), array('prefix'), array('prefix_except_default'));
-    }
-
-    private function getLoader($strategy = 'custom')
-    {
-        $translator = new Translator('en');
-        $translator->addLoader('yml', new YamlFileLoader());
-        $translator->addResource('yml', __DIR__.'/Fixture/routes.de.yml', 'de', 'routes');
-        $translator->addResource('yml', __DIR__.'/Fixture/routes.en.yml', 'en', 'routes');
-
-        return new I18nLoader(
-            new DefaultRouteExclusionStrategy(),
-            new DefaultPatternGenerationStrategy($strategy, $translator, array('en', 'de'), sys_get_temp_dir())
-        );
+        return new I18nLoader(['en' => '//website.com/en', 'de' => '//website.de']);
     }
 }

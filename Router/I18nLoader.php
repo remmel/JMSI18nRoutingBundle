@@ -32,14 +32,13 @@ use Symfony\Component\Config\Loader\LoaderResolver;
 class I18nLoader
 {
     const ROUTING_PREFIX = '__RG__';
+    const URL_KEY = '//';
+    private $locales;
 
-    private $routeExclusionStrategy;
-    private $patternGenerationStrategy;
 
-    public function __construct(RouteExclusionStrategyInterface $routeExclusionStrategy, PatternGenerationStrategyInterface $patternGenerationStrategy)
+    public function __construct(array $locales)
     {
-        $this->routeExclusionStrategy = $routeExclusionStrategy;
-        $this->patternGenerationStrategy = $patternGenerationStrategy;
+        $this->locales = $locales;
     }
 
     public function load(RouteCollection $collection)
@@ -48,33 +47,66 @@ class I18nLoader
         foreach ($collection->getResources() as $resource) {
             $i18nCollection->addResource($resource);
         }
-        $this->patternGenerationStrategy->addResources($i18nCollection);
 
         foreach ($collection->all() as $name => $route) {
-            if ($this->routeExclusionStrategy->shouldExcludeRoute($name, $route)) {
+            if ($this->shouldExcludeRoute($name, $route)) {
                 $i18nCollection->add($name, $route);
                 continue;
             }
 
-            foreach ($this->patternGenerationStrategy->generateI18nPatterns($name, $route) as $pattern => $locales) {
-                // If this pattern is used for more than one locale, we need to keep the original route.
-                // We still add individual routes for each locale afterwards for faster generation.
-                if (count($locales) > 1) {
-                    $catchMultipleRoute = clone $route;
-                    $catchMultipleRoute->setPath($pattern);
-                    $catchMultipleRoute->setDefault('_locales', $locales);
-                    $i18nCollection->add(implode('_', $locales).I18nLoader::ROUTING_PREFIX.$name, $catchMultipleRoute);
-                }
-
+            $patterns = $this->generateI18nPatterns($name, $route);
+            foreach ($patterns as $fullpaths => $locales) {
                 foreach ($locales as $locale) {
                     $localeRoute = clone $route;
-                    $localeRoute->setPath($pattern);
+                    list($host, $path) = $this->extractHostPath($fullpaths);
+                    $localeRoute->setHost($host);
+                    $localeRoute->setPath($path);
                     $localeRoute->setDefault('_locale', $locale);
-                    $i18nCollection->add($locale.I18nLoader::ROUTING_PREFIX.$name, $localeRoute);
+                    $i18nCollection->add($name.I18nLoader::ROUTING_PREFIX.$locale, $localeRoute);
                 }
             }
         }
 
         return $i18nCollection;
+    }
+
+    protected function shouldExcludeRoute($routeName, Route $route)
+    {
+        if ('_' === $routeName[0]) {
+            return true;
+        }
+
+        if (false === $route->getOption('i18n') || 'false' === $route->getOption('i18n')) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function generateI18nPatterns($routeName, Route $route) {
+        $patterns = array();
+        foreach ($route->getOption('i18n_locales') ?: array_keys($this->locales) as $locale) {
+            $fullroute = $route->getPath();
+            if (in_array($locale, array_keys($this->locales))) {
+                $prefix = $this->locales[$locale];
+                $fullroute = $prefix.$route->getPath();
+            }
+
+            $patterns[$fullroute][] = $locale;
+        }
+
+        return $patterns;
+    }
+
+    protected function extractHostPath(string $fullpath): array {
+        $host = $path = null;
+        if (substr($fullpath, 0, strlen(self::URL_KEY)) === self::URL_KEY) { //starts with //
+            $posFirstSlash = strpos($fullpath, '/', strlen(self::URL_KEY));
+            $host = substr($fullpath, strlen(self::URL_KEY), $posFirstSlash-strlen(self::URL_KEY));
+            $path = substr($fullpath, $posFirstSlash);
+        } else {
+            $path = $fullpath;
+        }
+        return [$host, $path];
     }
 }

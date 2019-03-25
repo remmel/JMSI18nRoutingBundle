@@ -18,18 +18,27 @@
 
 namespace JMS\I18nRoutingBundle\Tests\Functional;
 
-class CustomStrategyTest extends BaseTestCase
-{
-    public function testDefaultLocaleIsSetCorrectly()
-    {
-        $client = $this->createClient(array('config' => 'strategy_custom_with_hosts.yml'), array(
-            'HTTP_HOST' => 'de.host',
-        ));
+class ControllerTest extends BaseTestCase {
+    public function testDefaultLocaleIsSetCorrectly() {
+        $client = $this->createClient(['config' => 'host_per_locale.yml'], ['HTTP_HOST' => 'www.website.de']);
         $client->insulate();
+
+
+        $routes = $client->getContainer()->get('router')->getRouteCollection()->all();
+        self::assertArrayHasKey('homepage__RG__de', $routes);
 
         $crawler = $client->request('GET', '/');
 
         $this->assertEquals(1, count($locale = $crawler->filter('#locale')), substr($client->getResponse(), 0, 2000));
         $this->assertEquals('de', $locale->text());
+    }
+
+    public function testDisabledI18nRoute() {
+        $client = $this->createClient(array('config' => 'host_per_locale.yml'), array(
+            'HTTP_HOST' => 'localhost',
+        ));
+        $client->insulate();
+        $crawler = $client->request('GET', '/api');
+        $this->assertTrue($client->getResponse()->isSuccessful(), 'response successful');
     }
 }

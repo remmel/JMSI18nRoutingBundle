@@ -1,0 +1,5 @@
+page_bus-company: /bus-companies/{slug}
+page_train-company: /train/railway-companies/{slug}
+page_about: /who-we-are
+#page_foo: /fooen
+page_advert_show: /ad/{id}

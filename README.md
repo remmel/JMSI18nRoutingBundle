@@ -2,58 +2,60 @@
 
 i18n Routing Bundle for the Symfony Framework
 
-Documentation: 
-[Resources/doc](http://jmsyst.com/bundles/JMSI18nRoutingBundle)
-    
+In that fork, the code of previous strategies has been removed; [(native in Symfony)](https://symfony.com/blog/new-in-symfony-4-1-internationalized-routing)
+to keep/improve the host/prefix per locale. That feature might be [integrated in Symfony](https://github.com/symfony/symfony/issues/30617). 
 
-Code License:
-[Resources/meta/LICENSE](https://github.com/schmittjoh/JMSI18nRoutingBundle/blob/master/Resources/meta/LICENSE)
-
-
-Documentation License:
-[Resources/doc/LICENSE](https://github.com/schmittjoh/JMSI18nRoutingBundle/blob/master/Resources/doc/LICENSE)
-
-
-In that fork, a new strategy has been added to be able to define multiple host with multiple locales, eg : 
+For the following websites :
 - website.com/fr/
 - website.it
 - website.be/fr-be/
 - website.be/nl-be/
 
-```
-jms_i18n_routing:
-    default_locale: 'fr'
-    locales: ['fr','it', 'fr-be', 'nl-be']
-    strategy: prefix_per_locale
-    use_cookie: false
-    prefix: ['fr', 'fr-be', 'nl-be']
-    hosts:
-        fr: website.com
-        it: website.it
-        fr-be: website.be
-        nl-be: website.be
-    redirect_to_host: true
-```
-
-
-## Note
-Currently the jms plugin doesn't set the host when generating the route `I18nLoader`. It matches the host later in `I18nRouter.matchI18n`.
-It should be also better to simplier the configuration to have something like :
-
-```
+Configuration:
+```yml
 jms_i18n_routing:
     locales:
-        fr:
-            prefix: true
-            host: website.com
-        it:
-            prefix: false
-            host: website.it
-        fr-be:
-            prefix: true
-            host: website.be
-        nl-be:
-            prefix: true
-            host: website.be
+        fr: website.com
+        it: website.it
+        fr_BE: website.be/fr-be
+        nl_BE: website.be/nl-be
 ```
 
+A default locale must be set
+```yml
+parameters:
+    locale: en
+```yml
+
+Each route will be "duplicated" for each locale listed
+
+To disable i18n feature for specific route:
+`@Route("/api", options={"i18n"=false})`
+or
+```yml
+# app/config/routing.yml
+apiendpoint:
+    ...
+    options: { i18n: false }
+```
+
+To generate the route for a subset of locales:
+`@Route("/about", options={"i18n_locales"={"fr", "it"}})`
+
+Translating the url :  [from Symfony 4.1]((https://symfony.com/blog/new-in-symfony-4-1-internationalized-routing))
+
+# Installation
+As it's not existing in packagist, the git repository has to be configured :
+```yml
+"repositories": [
+    {
+        "type": "vcs",
+        "url": "git@github.com:remmel/JMSI18nRoutingBundle.git"
+    }
+]
+```
+
+`composer req jms/i18n-routing-bundle @dev`
+
+It should add in bundles.php :
+`JMS\I18nRoutingBundle\JMSI18nRoutingBundle::class => ['all' => true]`
