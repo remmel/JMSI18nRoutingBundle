@@ -1,33 +1,31 @@
-# JMSI18nRoutingBundle
+# Full prefix per locale
 
-i18n Routing Bundle for the Symfony Framework
+That bundle allows you to configure host+prefix per locale.
 
-In that fork, the code of previous strategies has been removed; [(native in Symfony)](https://symfony.com/blog/new-in-symfony-4-1-internationalized-routing)
-to keep/improve the host/prefix per locale. That feature might be [integrated in Symfony](https://github.com/symfony/symfony/issues/30617). 
+For the following websites:
+- www.website.com/fr/
+- www.website.it
+- www.website.be/fr-be/
+- www.website.be/nl-be/
 
-For the following websites :
-- website.com/fr/
-- website.it
-- website.be/fr-be/
-- website.be/nl-be/
-
-Configuration:
+## Configuration
+The configuration will be:
 ```yml
 jms_i18n_routing:
     locales:
-        fr: website.com
-        it: website.it
-        fr_BE: website.be/fr-be
-        nl_BE: website.be/nl-be
+        fr: //www.website.com
+        it: //www.website.it
+        fr_BE: //www.website.be/fr-be
+        nl_BE: //www.website.be/nl-be
 ```
 
-A default locale must be set
+Default locale must be set:
 ```yml
 parameters:
     locale: en
-```yml
+```
 
-Each route will be "duplicated" for each locale listed
+## Optional configuration
 
 To disable i18n feature for specific route:
 `@Route("/api", options={"i18n"=false})`
@@ -39,13 +37,12 @@ apiendpoint:
     options: { i18n: false }
 ```
 
-To generate the route for a subset of locales:
-`@Route("/about", options={"i18n_locales"={"fr", "it"}})`
-
-Translating the url :  [from Symfony 4.1]((https://symfony.com/blog/new-in-symfony-4-1-internationalized-routing))
+To enable the routes only for a subset of locales:
+`@Route("/about", options={"i18n_locales"={"fr", "it"}})` 
 
 # Installation
-As it's not existing in packagist, the git repository has to be configured :
+## No packagist
+That bundle has not been published in packagist, thus to be used in composer, it has to be configured in that way:
 ```yml
 "repositories": [
     {
@@ -54,8 +51,16 @@ As it's not existing in packagist, the git repository has to be configured :
     }
 ]
 ```
-
+## Composer req
 `composer req jms/i18n-routing-bundle @dev`
 
-It should add in bundles.php :
+## Loaded in your project
+
+Add the following line in _bundles.php_ to load the extension :
 `JMS\I18nRoutingBundle\JMSI18nRoutingBundle::class => ['all' => true]`
+
+# JMSI18nRoutingBundle vs Symfony i18n routing vs that extension
+That code is based on [JMSI18nRoutingBundle](https://github.com/schmittjoh/JMSI18nRoutingBundle).  
+That fork has been simplified to only keep the code related to the prefix/host per locale.  
+Symfony 4.1 now handle the [translation of route and the prefix](https://symfony.com/blog/new-in-symfony-4-1-internationalized-routing).  
+That bundle will be useless when that [feature will be implemented](https://github.com/symfony/symfony/issues/30617). 

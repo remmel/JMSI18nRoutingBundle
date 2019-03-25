@@ -18,11 +18,9 @@
 
 namespace JMS\I18nRoutingBundle\Router;
 
-use Symfony\Component\Translation\TranslatorInterface;
+use JMS\I18nRoutingBundle\Util\RouteExtractor;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
-use JMS\I18nRoutingBundle\Util\RouteExtractor;
-use Symfony\Component\Config\Loader\LoaderResolver;
 
 /**
  * This loader expands all routes which are eligible for i18n.
@@ -90,11 +88,11 @@ class I18nLoader
             if (in_array($locale, array_keys($this->locales))) {
                 $prefix = $this->locales[$locale];
                 $fullroute = $prefix.$route->getPath();
+            } else {
+                throw new \Exception("not configuration for locale: $locale found for route: $routeName in configuration: ".print_r($this->locales, true));
             }
-
             $patterns[$fullroute][] = $locale;
         }
-
         return $patterns;
     }
 

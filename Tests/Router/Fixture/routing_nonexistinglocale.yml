@@ -1,0 +1,4 @@
+welcome:
+    path: /welcome
+    defaults: { _controller: foo }
+    options: { i18n_locales: [de, en, es_CO] }

@@ -45,7 +45,13 @@ class I18nRouterTest extends TestCase {
         $this->assertEquals('//www.website.de/', $router->generate('homepage', array('_locale' => 'de')));
     }
 
-    private function getRouter($config = 'routing.yml', $translator = null, $localeResolver = null) {
+    public function testNonExistingLocale() {
+        $router = $this->getRouter('routing_nonexistinglocale.yml');
+        $this->expectException(\Exception::class);
+        $router->generate('welcome'); //code throwing an exception
+    }
+
+    private function getRouter($config = 'routing.yml') {
         $container = new Container();
         $container->set('routing.loader', new YamlFileLoader(new FileLocator(__DIR__ . '/Fixture')));
         $container->set('i18n_loader', new I18nLoader(['en' => '//www.website.com/en', 'de' => '//www.website.de', 'fr' => '//www.website.fr']));
