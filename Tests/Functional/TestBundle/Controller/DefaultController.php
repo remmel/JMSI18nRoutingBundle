@@ -25,14 +25,12 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
-class DefaultController
-{
+class DefaultController {
     /**
      * @Route("/", name = "homepage")
      * @Template
      */
-    public function indexAction(Request $request)
-    {
+    public function indexAction(Request $request) {
         $locale = method_exists($request, 'getLocale') ? $request->getLocale()
             : $request->getSession()->getLocale();
 
@@ -40,6 +38,7 @@ class DefaultController
     }
 
     /**
+     * Translated url
      * @Route("/contact", name="contact")
      * @Template
      */

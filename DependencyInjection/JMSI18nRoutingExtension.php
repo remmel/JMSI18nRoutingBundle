@@ -37,6 +37,7 @@ class JMSI18nRoutingExtension extends Extension
         $loader = new XmlFileLoader($container, new FileLocator(array(__DIR__.'/../Resources/config')));
         $loader->load('services.xml');
         $container->setParameter('jms_i18n_routing.locales', $config['locales']);
+        $container->setParameter('jms_i18n_routing.catalogue', $config['catalogue']);
     }
 
     public function getAlias()

@@ -36,6 +36,7 @@ final class Configuration implements ConfigurationInterface
                         //TODO check that begins with // or /
                         ->prototype('scalar')->end()
                     ->end()
+                    ->scalarNode('catalogue')->defaultValue('routes')->end()
                 ->end()
             ->end()
         ;

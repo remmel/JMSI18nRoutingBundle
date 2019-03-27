@@ -2,14 +2,14 @@ homepage:
     path: /
     defaults: { _controller: bar }
 
-welcome:
-    path: /welcome
+contact:
+    path: /contact
     defaults: { _controller: foo }
 
 not_available_in_all_locales:
     path: /not-available-in-all-locales
     options: { i18n_locales: [de, en] }
 
-non_i18n_route:
-    path: /non-i18n-route
+api_no_i18n:
+    path: /api
     options: { i18n: false }

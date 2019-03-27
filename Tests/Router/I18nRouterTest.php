@@ -23,8 +23,8 @@ use JMS\I18nRoutingBundle\Router\I18nRouter;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Container;
-use Symfony\Component\Routing\Loader\YamlFileLoader;
 use Symfony\Component\Routing\RequestContext;
+use Symfony\Component\Translation\Translator;
 
 class I18nRouterTest extends TestCase {
     public function testGenerate() {
@@ -37,8 +37,8 @@ class I18nRouterTest extends TestCase {
         $router->setContext($context);
 
 
-        $this->assertEquals('//www.website.com/en/welcome', $router->generate('welcome'));
-        $this->assertEquals('//www.website.de/welcome', $router->generate('welcome', array('_locale' => 'de')));
+        $this->assertEquals('//www.website.com/en/contact', $router->generate('contact'));
+        $this->assertEquals('//www.website.de/kontakt', $router->generate('contact', array('_locale' => 'de')));
 
         // test homepage
         $this->assertEquals('//www.website.com/en/', $router->generate('homepage', array('_locale' => 'en')));
@@ -52,9 +52,13 @@ class I18nRouterTest extends TestCase {
     }
 
     private function getRouter($config = 'routing.yml') {
+        $translator = new Translator('en');
+        $translator->addLoader('yml', new \Symfony\Component\Translation\Loader\YamlFileLoader());
+        $translator->addResource('yml', __DIR__ . '/Fixture/routes.de.yml', 'de', 'routes');
+
         $container = new Container();
-        $container->set('routing.loader', new YamlFileLoader(new FileLocator(__DIR__ . '/Fixture')));
-        $container->set('i18n_loader', new I18nLoader(['en' => '//www.website.com/en', 'de' => '//www.website.de', 'fr' => '//www.website.fr']));
+        $container->set('routing.loader', new \Symfony\Component\Routing\Loader\YamlFileLoader(new FileLocator(__DIR__ . '/Fixture')));
+        $container->set('i18n_loader', new I18nLoader($translator, ['en' => '//www.website.com/en', 'de' => '//www.website.de', 'fr' => '//www.website.fr']));
 
         $router = new I18nRouter($container, $config);
         $router->setI18nLoaderId('i18n_loader');

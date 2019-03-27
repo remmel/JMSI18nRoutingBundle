@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/remmel/JMSI18nRoutingBundle.svg?branch=master)](https://travis-ci.com/remmel/JMSI18nRoutingBundle)
+
 # Full prefix per locale
 
 That bundle allows you to configure host+prefix per locale.
@@ -8,7 +10,7 @@ For the following websites:
 - www.website.be/fr-be/
 - www.website.be/nl-be/
 
-## Configuration
+## Minimum configuration
 The configuration will be:
 ```yml
 jms_i18n_routing:
@@ -17,13 +19,23 @@ jms_i18n_routing:
         it: //www.website.it
         fr_BE: //www.website.be/fr-be
         nl_BE: //www.website.be/nl-be
-```
+```If the route are translate
 
 Default locale must be set:
 ```yml
 parameters:
     locale: en
 ```
+
+## Translation configuration
+To translate the route named "contact" in german :
+
+```yml
+# routes.de.yml (in translation folder, next to messages.??.yml files
+contact: /kontakt
+```
+
+
 
 ## Optional configuration
 

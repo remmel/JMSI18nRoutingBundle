@@ -22,11 +22,11 @@ use JMS\I18nRoutingBundle\Router\I18nLoader;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
+use Symfony\Component\Translation\Loader\YamlFileLoader;
+use Symfony\Component\Translation\Translator;
 
-class I18nLoaderTest extends TestCase
-{
-    public function testLoad()
-    {
+class I18nLoaderTest extends TestCase {
+    public function testLoad() {
         $col = new RouteCollection();
         $col->add('contact', new Route('/contact'));
         $i18nCol = $this->getLoader()->load($col);
@@ -34,7 +34,7 @@ class I18nLoaderTest extends TestCase
         $this->assertEquals(2, count($i18nCol->all()));
 
         $de = $i18nCol->get('contact__RG__de');
-        $this->assertEquals('/contact', $de->getPath());
+        $this->assertEquals('/kontakt', $de->getPath());
         $this->assertEquals('de', $de->getDefault('_locale'));
         $this->assertEquals('website.de', $de->getHost());
 
@@ -45,8 +45,7 @@ class I18nLoaderTest extends TestCase
     }
 
 
-    public function testLoadNoI18n()
-    {
+    public function testLoadNoI18n() {
         $col = new RouteCollection();
         $col->add('api_no_i18n', new Route('/api', array(), array(), array('i18n' => false)));
         $i18nCol = $this->getLoader()->load($col);
@@ -59,8 +58,11 @@ class I18nLoaderTest extends TestCase
         $this->assertEmpty($api->getHost());
     }
 
-    private function getLoader()
-    {
-        return new I18nLoader(['en' => '//website.com/en', 'de' => '//website.de']);
+    private function getLoader() {
+        $translator = new Translator('en');
+        $translator->addLoader('yml', new YamlFileLoader());
+        $translator->addResource('yml', __DIR__ . '/Fixture/routes.de.yml', 'de', 'routes');
+
+        return new I18nLoader($translator, ['en' => '//website.com/en', 'de' => '//website.de']);
     }
 }

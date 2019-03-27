@@ -21,6 +21,7 @@ namespace JMS\I18nRoutingBundle\Router;
 use JMS\I18nRoutingBundle\Util\RouteExtractor;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * This loader expands all routes which are eligible for i18n.
@@ -31,12 +32,16 @@ class I18nLoader
 {
     const ROUTING_PREFIX = '__RG__';
     const URL_KEY = '//';
+    private $translator;
+    private $translationDomain;
     private $locales;
 
 
-    public function __construct(array $locales)
+    public function __construct(TranslatorInterface $translator, array $locales, $translationDomain = 'routes')
     {
+        $this->translator = $translator;
         $this->locales = $locales;
+        $this->translationDomain = $translationDomain;
     }
 
     public function load(RouteCollection $collection)
@@ -84,10 +89,16 @@ class I18nLoader
     public function generateI18nPatterns($routeName, Route $route) {
         $patterns = array();
         foreach ($route->getOption('i18n_locales') ?: array_keys($this->locales) as $locale) {
-            $fullroute = $route->getPath();
+            //translation
+            $i18nPattern = $this->translator->trans($routeName, array(), $this->translationDomain, $locale);
+            if ($routeName === $i18nPattern) { // if no translation exists, we use the current pattern
+                $i18nPattern = $route->getPath();
+            }
+
+            //add prefix+host
             if (in_array($locale, array_keys($this->locales))) {
                 $prefix = $this->locales[$locale];
-                $fullroute = $prefix.$route->getPath();
+                $fullroute = $prefix.$i18nPattern;
             } else {
                 throw new \Exception("not configuration for locale: $locale found for route: $routeName in configuration: ".print_r($this->locales, true));
             }

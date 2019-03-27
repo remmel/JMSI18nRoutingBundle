@@ -18,27 +18,43 @@
 
 namespace JMS\I18nRoutingBundle\Tests\Functional;
 
+use Symfony\Component\Routing\Route;
+
 class ControllerTest extends BaseTestCase {
-    public function testDefaultLocaleIsSetCorrectly() {
+    public function testStandardPage() {
         $client = $this->createClient(['config' => 'host_per_locale.yml'], ['HTTP_HOST' => 'www.website.de']);
         $client->insulate();
 
 
         $routes = $client->getContainer()->get('router')->getRouteCollection()->all();
-        self::assertArrayHasKey('homepage__RG__de', $routes);
+        $this->assertArrayHasKey('homepage__RG__de', $routes);
 
         $crawler = $client->request('GET', '/');
-
         $this->assertEquals(1, count($locale = $crawler->filter('#locale')), substr($client->getResponse(), 0, 2000));
         $this->assertEquals('de', $locale->text());
     }
 
     public function testDisabledI18nRoute() {
-        $client = $this->createClient(array('config' => 'host_per_locale.yml'), array(
-            'HTTP_HOST' => 'localhost',
-        ));
+        $client = $this->createClient(['config' => 'host_per_locale.yml'], ['HTTP_HOST' => 'localhost']);
         $client->insulate();
         $crawler = $client->request('GET', '/api');
+        $this->assertTrue($client->getResponse()->isSuccessful(), 'response successful');
+    }
+
+    //TODO inject translation resource to be able to test the translation of the route
+    public function disabled_testTranslatedRoute() {
+        $client = $this->createClient(['config' => 'host_per_locale.yml'], ['HTTP_HOST' => 'www.website.de']);
+        $client->insulate();
+
+        $routes = $client->getContainer()->get('router')->getRouteCollection()->all();
+
+        $this->assertArrayHasKey('contact__RG__de', $routes);
+
+        /** @var Route $route */
+        $route = $routes['contact__RG__de'];
+        $this->assertEquals('/kontakt', $route->getPath());
+
+        $crawler = $client->request('GET', '/kontakt');
         $this->assertTrue($client->getResponse()->isSuccessful(), 'response successful');
     }
 }

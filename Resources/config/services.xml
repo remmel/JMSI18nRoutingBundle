@@ -15,7 +15,9 @@
         </service>
         
         <service id="jms_i18n_routing.loader" class="JMS\I18nRoutingBundle\Router\I18nLoader" public="true">
+            <argument type="service" id="translator" />
             <argument>%jms_i18n_routing.locales%</argument>
+            <argument>%jms_i18n_routing.catalogue%</argument>
         </service>
     </services>
 </container>
