@@ -29,7 +29,7 @@ use Symfony\Component\Routing\Exception\RouteNotFoundException;
 class I18nRouter extends Router {
     private $i18nLoaderId;
     private $container;
-    private $defaultLocale;
+    private $defaultLocaleI18n;
 
     /**
      * Constructor.
@@ -50,8 +50,8 @@ class I18nRouter extends Router {
         $this->i18nLoaderId = $id;
     }
 
-    public function setDefaultLocale($locale) {
-        $this->defaultLocale = $locale;
+    public function setDefaultLocaleI18n($locale) {
+        $this->defaultLocaleI18n = $locale;
     }
 
     /**
@@ -65,7 +65,7 @@ class I18nRouter extends Router {
         } else if ($currentLocale) {
             $locale = $currentLocale;
         } else {
-            $locale = $this->defaultLocale;
+            $locale = $this->defaultLocaleI18n;
         }
 
         $generator = $this->getGenerator();
