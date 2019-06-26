@@ -50,7 +50,7 @@ class I18nRouter extends Router {
         $this->i18nLoaderId = $id;
     }
 
-    public function setDefaultLocaleI18n($locale) {
+    public function setDefaultLocale($locale) {
         $this->defaultLocaleI18n = $locale;
     }
 
