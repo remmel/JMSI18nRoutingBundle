@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/remmel/JMSI18nRoutingBundle.svg?branch=master)](https://travis-ci.com/remmel/JMSI18nRoutingBundle)
+[![Build Status](https://travis-ci.com/remmel/i18n-routing-bundle.svg?branch=master)](https://travis-ci.com/remmel/i18n-routing-bundle)
 
 # Full prefix per locale
 
@@ -57,18 +57,7 @@ To enable the routes only for a subset of locales:
 Thoses locales must be configured in jms_i18n_routing.locales
 
 # Installation
-## No packagist
-That bundle has not been published in packagist, thus to be used in composer, it has to be configured in that way:
-```yml
-"repositories": [
-    {
-        "type": "vcs",
-        "url": "git@github.com:remmel/JMSI18nRoutingBundle.git"
-    }
-]
-```
-## Composer req
-`composer req jms/i18n-routing-bundle @dev`
+`composer req remmel/i18n-routing-bundle`
 
 ## Loaded in your project
 
