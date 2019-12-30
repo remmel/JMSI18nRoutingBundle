@@ -32,10 +32,9 @@ class I18nLoader
 {
     const ROUTING_PREFIX = '__RG__';
     const URL_KEY = '//';
-    private $translator;
-    private $translationDomain;
-    private $locales;
-
+    protected $translator;
+    protected $translationDomain;
+    protected $locales;
 
     public function __construct(TranslatorInterface $translator, array $locales, $translationDomain = 'routes')
     {
@@ -104,6 +103,7 @@ class I18nLoader
             }
             $patterns[$fullroute][] = $locale;
         }
+
         return $patterns;
     }
 
@@ -116,6 +116,7 @@ class I18nLoader
         } else {
             $path = $fullpath;
         }
+
         return [$host, $path];
     }
 }
