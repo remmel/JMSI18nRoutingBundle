@@ -5,37 +5,39 @@
 That bundle allows you to configure host+prefix per locale.
 
 For the following websites:
-- www.website.com/en/
+- www.website.com
 - www.website.de
-- www.website.be/fr-be/
-- www.website.be/nl-be/
+- www.website.be/fr/
+- www.website.be/nl/
 
 ## Minimum configuration
 The configuration will be:
 ```yml
+# jms_i18n_routing.yaml
 jms_i18n_routing:
     locales:
         en: //www.website.com
         de: //www.website.de
-        fr_BE: //www.website.be/fr-be
-        nl_BE: //www.website.be/nl-be
+        fr_BE: //www.website.be/fr
+        nl_BE: //www.website.be/nl
 ```
 
-Default locale must be set:
+Default locale must be set in
 ```yml
+# services.yaml
 parameters:
-    locale: en
+    locale: "%kernel.default_locale%"
 ```
 
 ## Translation configuration
-To translate the route named "contact" in german :
+To translate the route named "contact_page" in german :
 
 ```yml
-# routes.de.yml (in translation folder, next to messages.??.yml files
-contact: /kontakt
+# translations/routes.de.yml
+contact_page: /kontakt
 ```
 
-Thus the route named _contact_ will be used when calling:
+Thus the route named _contact_page_ will be used when calling:
  - www.website.com/en/contact
  - www.website.de/kontakt
 
@@ -46,7 +48,7 @@ To disable i18n feature for specific route:
 `@Route("/api", options={"i18n"=false})`
 or
 ```yml
-# app/config/routing.yml
+# app/config/routing.yaml
 apiendpoint:
     ...
     options: { i18n: false }
@@ -63,6 +65,9 @@ Thoses locales must be configured in jms_i18n_routing.locales
 
 Add the following line in _bundles.php_ to load the extension :
 `JMS\I18nRoutingBundle\JMSI18nRoutingBundle::class => ['all' => true]`
+
+# Symfony demo app
+[Full Symfony application example](https://github.com/remmel/i18n-routing-demo)
 
 # JMSI18nRoutingBundle vs Symfony i18n routing vs that extension
 That code is based on [JMSI18nRoutingBundle](https://github.com/schmittjoh/JMSI18nRoutingBundle).  
