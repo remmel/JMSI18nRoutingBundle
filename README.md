@@ -38,7 +38,7 @@ contact_page: /kontakt
 ```
 
 Thus the route named _contact_page_ will be used when calling:
- - www.website.com/en/contact
+ - www.website.com/contact
  - www.website.de/kontakt
 
 
