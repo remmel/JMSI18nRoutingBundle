@@ -5,15 +5,15 @@
 That bundle allows you to configure host+prefix per locale.
 
 For the following websites:
-- www.website.com
-- www.website.de
-- www.website.be/fr/
-- www.website.be/nl/
+- www.website.com (english)
+- www.website.de (german)
+- www.website.be/fr/ (french of Belgium)
+- www.website.be/nl/ (dutch of Belgium)
 
 ## Minimum configuration
 The configuration will be:
 ```yml
-# jms_i18n_routing.yaml
+# config/packages/jms_i18n_routing.yaml
 jms_i18n_routing:
     locales:
         en: //www.website.com
@@ -59,12 +59,34 @@ To enable the routes only for a subset of locales:
 Thoses locales must be configured in jms_i18n_routing.locales
 
 # Installation
+
+## Applications that use Symfony Flex 
 `composer req remmel/i18n-routing-bundle`
 
-## Loaded in your project
+## Applications that don't use Symfony Flex
 
-Add the following line in _bundles.php_ to load the extension :
-`JMS\I18nRoutingBundle\JMSI18nRoutingBundle::class => ['all' => true]`
+### Step 1: Download the Bundle
+`composer req remmel/i18n-routing-bundle`
+
+### Step 2: Enable the Bundle
+
+```php
+// config/bundles.php
+
+return [
+    // ...
+    JMS\I18nRoutingBundle\JMSI18nRoutingBundle::class => ['all' => true],
+];
+```
+
+## All: Create configuration
+```yml
+# config/packages/jms_i18n_routing.yaml
+jms_i18n_routing:
+    locales:
+        en: //localhost/eng
+        de: //localhost/deu
+```
 
 # Symfony demo app
 [Full Symfony application example](https://github.com/remmel/i18n-routing-demo)
