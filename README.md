@@ -60,15 +60,10 @@ Thoses locales must be configured in jms_i18n_routing.locales
 
 # Installation
 
-## Applications that use Symfony Flex 
+## Download the Bundle
 `composer req remmel/i18n-routing-bundle`
 
-## Applications that don't use Symfony Flex
-
-### Step 1: Download the Bundle
-`composer req remmel/i18n-routing-bundle`
-
-### Step 2: Enable the Bundle
+## Enable the Bundle - For applications that don't use Symfony Flex : 
 
 ```php
 // config/bundles.php
@@ -79,14 +74,17 @@ return [
 ];
 ```
 
-## All: Create configuration
+## Create configuration
+Simple configuration with 2 folders :
 ```yml
 # config/packages/jms_i18n_routing.yaml
 jms_i18n_routing:
     locales:
-        en: //localhost/eng
-        de: //localhost/deu
+        en: /eng
+        de: /deu
 ```
+
+When updating that config, it might be needed to clear cache: `bin/console cache:clear`
 
 # Symfony demo app
 [Full Symfony application example](https://github.com/remmel/i18n-routing-demo)
