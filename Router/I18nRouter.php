@@ -27,27 +27,15 @@ use Symfony\Component\Routing\Exception\RouteNotFoundException;
  * @author Johannes M. Schmitt <schmittjoh@gmail.com>
  */
 class I18nRouter extends Router {
-    private $i18nLoaderId;
-    private $container;
+
+    /** @var I18nLoader */
+    private $i18nLoader;
+
+    /** @var string */
     private $defaultLocaleI18n;
 
-    /**
-     * Constructor.
-     *
-     * The only purpose of this is to make the container available in the sub-class
-     * since it is declared private in the parent class.
-     *
-     * The parameters are not listed explicitly here because they are different for
-     * Symfony 2.0 and 2.1. If we did list them, it would make this class incompatible
-     * with one of both versions.
-     */
-    public function __construct() {
-        call_user_func_array(array(Router::class, '__construct'), func_get_args());
-        $this->container = func_get_arg(0);
-    }
-
-    public function setI18nLoaderId($id) {
-        $this->i18nLoaderId = $id;
+    public function setI18nLoader(I18nLoader $i18nLoader) {
+        $this->i18nLoader = $i18nLoader;
     }
 
     public function setDefaultLocale($locale) {
@@ -65,6 +53,7 @@ class I18nRouter extends Router {
         } else if ($currentLocale) {
             $locale = $currentLocale;
         } else {
+            // no custom locale in the context, use project default locale
             $locale = $this->defaultLocaleI18n;
         }
 
@@ -79,6 +68,6 @@ class I18nRouter extends Router {
 
     public function getRouteCollection() {
         $collection = parent::getRouteCollection();
-        return $this->container->get($this->i18nLoaderId)->load($collection);
+        return $this->i18nLoader->load($collection);
     }
 }

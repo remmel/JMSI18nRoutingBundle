@@ -1,9 +1,6 @@
 imports:
     - { resource: ./default.yml }
 
-parameters:
-    locale: en
-
 jms_i18n_routing:
     locales:
         en: //www.website.com/en

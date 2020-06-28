@@ -6,11 +6,11 @@
 
     <services>
         <service id="jms_i18n_routing.router" class="JMS\I18nRoutingBundle\Router\I18nRouter" parent="router.default" public="false">
-            <call method="setI18nLoaderId">
-                <argument>jms_i18n_routing.loader</argument>
-            </call>
             <call method="setDefaultLocale">
-                <argument>%locale%</argument>
+                <argument>%kernel.default_locale%</argument>
+            </call>
+            <call method="setI18nLoader">
+                <argument type="service" id="jms_i18n_routing.loader"/>
             </call>
         </service>
         

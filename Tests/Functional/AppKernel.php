@@ -20,7 +20,6 @@ namespace JMS\I18nRoutingBundle\Tests\Functional;
 
 require_once __DIR__.'/../bootstrap.php';
 
-use JMS\I18nRoutingBundle\Exception\RuntimeException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Kernel;
@@ -39,7 +38,7 @@ class AppKernel extends Kernel
         }
 
         if (!file_exists($config)) {
-            throw new RuntimeException(sprintf('The config file "%s" does not exist.', $config));
+            throw new \RuntimeException(sprintf('The config file "%s" does not exist.', $config));
         }
 
         $this->config = $config;

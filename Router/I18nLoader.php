@@ -32,12 +32,19 @@ class I18nLoader
 {
     const ROUTING_PREFIX = '__RG__';
     const URL_KEY = '//';
+    const OPT_I18N = 'i18n'; // warning, illogical priority order between annotations.yaml & php controller (eg @Route(options={"i18n"=false})) : class < method < yaml
+    const OPT_I18N_LOCALES = 'i18n_locales';
+
+    /** @var TranslatorInterface  */
     private $translator;
+
+    /** @var string  */
     private $translationDomain;
+
+    /** @var array  */
     private $locales;
 
-
-    public function __construct(TranslatorInterface $translator, array $locales, $translationDomain = 'routes')
+    public function __construct(TranslatorInterface $translator, array $locales, string $translationDomain = 'routes')
     {
         $this->translator = $translator;
         $this->locales = $locales;
@@ -61,7 +68,7 @@ class I18nLoader
             foreach ($patterns as $fullpaths => $locales) {
                 foreach ($locales as $locale) {
                     $localeRoute = clone $route;
-                    list($host, $path) = $this->extractHostPath($fullpaths);
+                    list($host, $path) = $this::extractHostPath($fullpaths);
                     $localeRoute->setHost($host);
                     $localeRoute->setPath($path);
                     $localeRoute->setDefault('_locale', $locale);
@@ -73,22 +80,23 @@ class I18nLoader
         return $i18nCollection;
     }
 
-    protected function shouldExcludeRoute($routeName, Route $route)
+    // translation is disabled only if i18n option is false
+    protected function shouldExcludeRoute(string $routeName, Route $route)
     {
         if ('_' === $routeName[0]) {
             return true;
         }
 
-        if (false === $route->getOption('i18n') || 'false' === $route->getOption('i18n')) {
+        if (false === $route->getOption(self::OPT_I18N) || 'false' === $route->getOption(self::OPT_I18N)) {
             return true;
         }
 
         return false;
     }
 
-    public function generateI18nPatterns($routeName, Route $route) {
+    protected function generateI18nPatterns(string $routeName, Route $route) {
         $patterns = array();
-        foreach ($route->getOption('i18n_locales') ?: array_keys($this->locales) as $locale) {
+        foreach ($route->getOption(self::OPT_I18N_LOCALES) ?: array_keys($this->locales) as $locale) {
             //translation
             $i18nPattern = $this->translator->trans($routeName, array(), $this->translationDomain, $locale);
             if ($routeName === $i18nPattern) { // if no translation exists, we use the current pattern
@@ -96,7 +104,7 @@ class I18nLoader
             }
 
             //add prefix+host
-            if (in_array($locale, array_keys($this->locales))) {
+            if (array_key_exists($locale, $this->locales)) {
                 $prefix = $this->locales[$locale];
                 $fullroute = $prefix.$i18nPattern;
             } else {
@@ -107,7 +115,7 @@ class I18nLoader
         return $patterns;
     }
 
-    protected function extractHostPath(string $fullpath): array {
+    public static function extractHostPath(string $fullpath): array {
         $host = $path = null;
         if (substr($fullpath, 0, strlen(self::URL_KEY)) === self::URL_KEY) { //starts with //
             $posFirstSlash = strpos($fullpath, '/', strlen(self::URL_KEY));

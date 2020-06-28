@@ -58,10 +58,12 @@ class I18nRouterTest extends TestCase {
 
         $container = new Container();
         $container->set('routing.loader', new \Symfony\Component\Routing\Loader\YamlFileLoader(new FileLocator(__DIR__ . '/Fixture')));
-        $container->set('i18n_loader', new I18nLoader($translator, ['en' => '//www.website.com/en', 'de' => '//www.website.de', 'fr' => '//www.website.fr']));
+        $i18nLoader = new I18nLoader($translator,
+            ['en' => '//www.website.com/en', 'de' => '//www.website.de', 'fr' => '//www.website.fr']);
+        $container->set('i18n_loader', $i18nLoader);
 
         $router = new I18nRouter($container, $config);
-        $router->setI18nLoaderId('i18n_loader');
+        $router->setI18nLoader($i18nLoader);
 
         return $router;
     }

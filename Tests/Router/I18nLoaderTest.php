@@ -65,4 +65,12 @@ class I18nLoaderTest extends TestCase {
 
         return new I18nLoader($translator, ['en' => '//website.com/en', 'de' => '//website.de']);
     }
+
+    public function testExtractHostPath() {
+        $actual = I18nLoader::extractHostPath('//www.website.com/en/');
+        $this->assertEquals(['www.website.com', '/en/'], $actual);
+
+        $actual = I18nLoader::extractHostPath('/site');
+        $this->assertEquals([null, '/site'], $actual);
+    }
 }

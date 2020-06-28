@@ -22,13 +22,6 @@ jms_i18n_routing:
         nl_BE: //www.website.be/nl
 ```
 
-Default locale must be set in
-```yml
-# services.yaml
-parameters:
-    locale: "%kernel.default_locale%"
-```
-
 ## Translation configuration
 To translate the route named "contact_page" in german :
 
@@ -75,7 +68,7 @@ return [
 ```
 
 ## Create configuration
-Simple configuration with 2 folders :
+Simple configuration with 2 "folders" :
 ```yml
 # config/packages/jms_i18n_routing.yaml
 jms_i18n_routing:
@@ -84,13 +77,19 @@ jms_i18n_routing:
         de: /deu
 ```
 
-When updating that config, it might be needed to clear cache: `bin/console cache:clear`
+When updating that config, it might be needed to clear cache: `bin/console cache:clear`  
+Check that configuration is fine running `bin/console debug:router`  
 
 # Symfony demo app
 [Full Symfony application example](https://github.com/remmel/i18n-routing-demo)
 
 # JMSI18nRoutingBundle vs Symfony i18n routing vs that extension
+## JMSI18nRoutingBundle
 That code is based on [JMSI18nRoutingBundle](https://github.com/schmittjoh/JMSI18nRoutingBundle).  
-That fork has been simplified to only keep the code related to the prefix/host per locale.  
-Symfony 4.1 now handle the [translation of route and the prefix](https://symfony.com/blog/new-in-symfony-4-1-internationalized-routing).  
+That fork has been simplified to only keep the code related to the prefix/host per locale.
+
+## Symfony
+Symfony 4.1 now handle the [translation of route and the prefix](https://symfony.com/blog/new-in-symfony-4-1-internationalized-routing).
+Symfony 5.1 now handle the [different host per locale](https://symfony.com/blog/new-in-symfony-5-1-different-hosts-per-locale).
+Thus, that extension is usefull if you want to externalize route translations (eg in routes.xx.yml).      
 That bundle will be useless when that [feature will be implemented](https://github.com/symfony/symfony/issues/30617) and translations externalized in routes.??.yml files. 
